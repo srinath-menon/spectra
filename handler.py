@@ -12,22 +12,28 @@ class SpectraHandler(http.server.SimpleHTTPRequestHandler):
         super().__init__(*args, directory=SpectraHandler.root_dir, **kwargs)
 
     def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        data = json.loads(post_data.decode('utf-8'))
+
         if self.path == '/favorite':
-            content_length = int(self.headers['Content-Length'])
-            data = json.loads(self.rfile.read(content_length).decode('utf-8'))
+            # ... (keep existing single favorite logic)
+            success = scanner.move_to_favorites(data['path'], SpectraHandler.root_dir)
             
+        elif self.path == '/favorite_batch':
             try:
-                # Tell scanner to move relative to our target root
-                success = scanner.move_to_favorites(data['path'], SpectraHandler.root_dir)
+                success = scanner.move_batch_to_favorites(data['paths'], SpectraHandler.root_dir)
                 if success:
                     self.send_response(200)
                     self.send_header("Content-type", "application/json")
                     self.end_headers()
                     self.wfile.write(json.dumps({"status": "success"}).encode())
+                    return
             except Exception as e:
                 self.send_response(500)
                 self.end_headers()
                 self.wfile.write(str(e).encode())
+                return
 
     def do_GET(self):
         if self.path == '/' or self.path == '':

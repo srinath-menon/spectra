@@ -45,3 +45,17 @@ def move_to_favorites(relative_path, base_dir):
     destination = os.path.join(fav_dir, filename)
     shutil.move(source_path, destination)
     return True
+
+
+def move_batch_to_favorites(paths_list, base_dir):
+    """Moves a list of relative paths to the _fav_ folder."""
+    fav_dir = os.path.join(base_dir, FAV_FOLDER)
+    if not os.path.exists(fav_dir):
+        os.makedirs(fav_dir)
+        
+    for rel_path in paths_list:
+        source_path = os.path.join(base_dir, urllib.parse.unquote(rel_path))
+        if os.path.exists(source_path):
+            destination = os.path.join(fav_dir, os.path.basename(source_path))
+            shutil.move(source_path, destination)
+    return True
