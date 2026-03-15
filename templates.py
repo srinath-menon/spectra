@@ -185,8 +185,10 @@ def get_gallery_html(images_data):
                 const count = selectedPaths.size;
                 if (count === 0) return;
 
+                const overlay = document.getElementById('loading-overlay');
+
                 if (confirm(`Move ${count} files to Favorites?`)) {
-                    document.getElementById('loading-overlay').style.display = 'flex';
+                    if (overlay) overlay.style.display = 'flex';
                     try {
                         const res = await fetch('/favorite_batch', {
                             method: 'POST',
@@ -195,21 +197,17 @@ def get_gallery_html(images_data):
                         });
                         
                         if (res.ok) {
-                            // First, update the hash so the browser knows where to go
-                            if (currentFolderName !== ".") {
-                                location.hash = encodeURIComponent(currentFolderName);
-                            } else {
-                                location.hash = "";
-                            }
-                            // Then reload the page
-                            location.reload();
+                            const hash = currentFolderName === "." ? "" : "#" + encodeURIComponent(currentFolderName);
+                            window.location.replace(window.location.pathname + window.location.search + hash);
+                            window.location.reload(); 
                         } else {
-                            document.getElementById('loading-overlay').style.display = 'none';
-                            alert("Server error: Could not move files.");
+                            if (overlay) overlay.style.display = 'none';
+                            alert("Server error: Move failed.");
                         }
                     } catch (err) {
-                        document.getElementById('loading-overlay').style.display = 'none';
-                        console.error("Fetch error:", err);
+                        if (overlay) overlay.style.display = 'none';
+                        console.error("Batch Move Error:", err);
+                        alert("Connection lost. Please refresh manually.");
                     }
                 }
             }
@@ -237,18 +235,26 @@ def get_gallery_html(images_data):
 
             async function favoriteCurrent() {
                 const imgPath = filteredImages[currentIndex].src;
-                const response = await fetch('/favorite', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ path: imgPath })
-                });
-                if (response.ok) {
-                    if (currentFolderName !== ".") {
-                        location.hash = encodeURIComponent(currentFolderName);
+                const overlay = document.getElementById('loading-overlay');
+                
+                if (overlay) overlay.style.display = 'flex';
+                
+                try {
+                    const response = await fetch('/favorite', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ path: imgPath })
+                    });
+                    if (response.ok) {
+                        const hash = currentFolderName === "." ? "" : "#" + encodeURIComponent(currentFolderName);
+                        window.location.replace(window.location.pathname + window.location.search + hash);
+                        window.location.reload();
                     } else {
-                        location.hash = "";
+                        if (overlay) overlay.style.display = 'none';
                     }
-                    location.reload();
+                } catch (err) {
+                    if (overlay) overlay.style.display = 'none';
+                    console.error("Single Move Error:", err);
                 }
             }
 
