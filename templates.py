@@ -41,7 +41,6 @@ def get_gallery_html(images_data):
             #fav-btn { position: absolute; bottom: 40px; right: 40px; font-size: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1010; }
             #sentinel { height: 100px; width: 100%; }
             
-            /* Loading Overlay */
             #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; color: white; flex-direction: column; align-items: center; justify-content: center; }
         </style>
     </head>
@@ -80,6 +79,7 @@ def get_gallery_html(images_data):
             let filteredImages = [...allImages];
             let selectedPaths = new Set();
             let isSelectMode = false;
+            let currentFolderName = "."; // Track the current folder state
             
             let loadedCount = 0;
             let currentIndex = 0;
@@ -126,9 +126,7 @@ def get_gallery_html(images_data):
 
             function renderSelection() {
                 const cards = document.querySelectorAll('.img-card');
-                cards.forEach((card) => {
-                    card.classList.remove('selected');
-                });
+                cards.forEach((card) => card.classList.remove('selected'));
             }
 
             async function submitBatchFavorite() {
@@ -136,7 +134,7 @@ def get_gallery_html(images_data):
                 if (count === 0) return;
 
                 if (confirm(`Move ${count} files to Favorites?`)) {
-                    loader.style.display = 'flex'; // Show processing overlay
+                    loader.style.display = 'flex';
                     try {
                         const res = await fetch('/favorite_batch', {
                             method: 'POST',
@@ -145,8 +143,11 @@ def get_gallery_html(images_data):
                         });
                         
                         if (res.ok) {
-                            alert("Success! " + count + " files moved. Refreshing now...");
-                            location.reload();
+                            alert("Success! " + count + " files moved.");
+                            // NEW: Append the folder name to the URL hash before reload
+                            const hash = currentFolderName === "." ? "" : "#" + encodeURIComponent(currentFolderName);
+                            window.location.href = window.location.pathname + window.location.search + hash;
+                            window.location.reload();
                         } else {
                             loader.style.display = 'none';
                             alert("Server error: Could not move files.");
@@ -164,6 +165,7 @@ def get_gallery_html(images_data):
             }
 
             function filterByFolder(folderPath) {
+                currentFolderName = folderPath;
                 filteredImages = allImages.filter(img => img.folder === folderPath);
                 updateLabel(folderPath, filteredImages.length);
                 applyFilterUpdate();
@@ -171,6 +173,7 @@ def get_gallery_html(images_data):
             }
 
             function resetFilter() {
+                currentFolderName = ".";
                 filteredImages = [...allImages];
                 updateLabel("[All Photos]", filteredImages.length);
                 applyFilterUpdate();
@@ -187,10 +190,7 @@ def get_gallery_html(images_data):
             }
 
             function loadMore() {
-                // PERFORMANCE ENHANCEMENT: 
-                // Load 10 images if it's the very first batch, otherwise load 50.
                 const currentBatchSize = (loadedCount === 0) ? 10 : 50;
-                
                 const nextBatch = filteredImages.slice(loadedCount, loadedCount + currentBatchSize);
                 nextBatch.forEach((imgData, index) => {
                     const globalIndex = loadedCount + index;
@@ -205,7 +205,7 @@ def get_gallery_html(images_data):
 
             const observer = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting && loadedCount < filteredImages.length) loadMore();
-            }, { rootMargin: '400px' }); // Slightly larger margin for smoother scrolling
+            }, { rootMargin: '400px' });
             observer.observe(document.getElementById('sentinel'));
 
             function openLightbox(index) {
@@ -230,7 +230,9 @@ def get_gallery_html(images_data):
                     body: JSON.stringify({ path: imgPath })
                 });
                 if (response.ok) {
-                    location.reload();
+                    const hash = currentFolderName === "." ? "" : "#" + encodeURIComponent(currentFolderName);
+                    window.location.href = window.location.pathname + window.location.search + hash;
+                    window.location.reload();
                 }
             }
 
@@ -243,8 +245,23 @@ def get_gallery_html(images_data):
                 }
             });
 
-            updateLabel("[All Photos]", allImages.length);
-            loadMore();
+            // NEW: Initialization logic to check URL Hash
+            window.addEventListener('DOMContentLoaded', () => {
+                const hash = window.location.hash.substring(1);
+                if (hash) {
+                    const folderName = decodeURIComponent(hash);
+                    // Check if folder exists in data
+                    const folderExists = allImages.some(img => img.folder === folderName);
+                    if (folderExists) {
+                        filterByFolder(folderName);
+                        // Close drawer if open (though it shouldn't be yet)
+                        document.getElementById('folder-drawer').style.display = 'none';
+                        return;
+                    }
+                }
+                // Fallback to default load
+                resetFilter();
+            });
         </script>
     </body>
     </html>
