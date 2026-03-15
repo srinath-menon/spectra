@@ -1,0 +1,433 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"tex-",
+				"text-center"
+			],
+			[
+				"tex",
+				"text-center"
+			],
+			[
+				"SH",
+				"SHEET_URL"
+			],
+			[
+				"get",
+				"getProperty"
+			],
+			[
+				"pr",
+				"propType"
+			],
+			[
+				"bi",
+				"BillItemCount"
+			],
+			[
+				"new",
+				"newvalue"
+			],
+			[
+				"ord",
+				"orderPost"
+			],
+			[
+				"bill",
+				"billData"
+			],
+			[
+				"or",
+				"orderRow"
+			],
+			[
+				"Ord",
+				"orderRow"
+			],
+			[
+				"tmp",
+				"tmpBillObj"
+			],
+			[
+				"qs",
+				"qsBillArr"
+			],
+			[
+				"lo",
+				"Logger"
+			],
+			[
+				"in",
+				"intOrderRow"
+			],
+			[
+				"start",
+				"startRow"
+			],
+			[
+				"stop",
+				"stopinfloaderQSOrder"
+			],
+			[
+				"qsO",
+				"qsOrderObj"
+			],
+			[
+				"fil",
+				"filteredData"
+			],
+			[
+				"filt",
+				"filteredData"
+			],
+			[
+				"cust",
+				"custListData"
+			],
+			[
+				"menu",
+				"menuObj"
+			],
+			[
+				"re",
+				"retObj"
+			],
+			[
+				"Pr",
+				"PrepStatus"
+			],
+			[
+				"carr",
+				"carrDataStr"
+			],
+			[
+				"ret",
+				"retObj"
+			],
+			[
+				"Pri",
+				"PrimaryAddress"
+			],
+			[
+				"cus",
+				"custInd"
+			],
+			[
+				"fa",
+				"faIconText"
+			],
+			[
+				"add",
+				"addrArrStr"
+			],
+			[
+				"newOrde",
+				"newOrderRow"
+			],
+			[
+				"contain",
+				"container-fluid"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"termi",
+				"Terminal: Open in project folder"
+			],
+			[
+				"comm",
+				"Git: Commit"
+			],
+			[
+				"git",
+				"Git: Add All"
+			],
+			[
+				"git remo",
+				"Git: Track Remote Branch"
+			],
+			[
+				"git push",
+				"Git: Push"
+			],
+			[
+				": add ",
+				"Git: Add All"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 112.0,
+		"history":
+		[
+			"pwd"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/admin/Programs/Projects/Python/spectra"
+	],
+	"file_history":
+	[
+		"/Users/admin/Downloads/ArcDownloads/gallery.py",
+		"/Users/admin/Programs/imageme.py",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/suggested_JSON_2.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/JSON_schema.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/suggested_JSON_5.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/suggested_JSON_4.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/suggested_JSON_3.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/detailed_LLM_output.txt",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/LLM_JSON1.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/misc/profile_output_20250927_correct.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250928_161137.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/generated_data_20250928_155818.txt",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/LLM_JSON2.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/LLM_prompt.txt",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250928_005550.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250928_011256.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/generated_data_20250928_153724.txt",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/handoffs/account_handoff_V3.dat",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/generated_data_20250928_152454.txt",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250927_correct.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250928_005021.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250927_213458.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250927_211953.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250927_212948.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250927_191800.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250927_191219.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/synthetic_data/profile_output_20250927_192159.json",
+		"/Users/admin/Programs/Projects/Python/cibus2/data/handoffs/account_handoff_V1.dat",
+		"/Users/admin/Programs/Projects/Python/cibus/data/loan_sample_data50.txt",
+		"/Users/admin/Programs/Projects/Python/cibus/data/loan_sample_data_rnd.txt",
+		"/Users/admin/Programs/Projects/Python/cibus/data/loan_sample_data2_rnd.txt",
+		"/Users/admin/Programs/Projects/Python/cibus/synth-loan-data1.txt",
+		"/Users/admin/Programs/Projects/Python/cibus/synth-loan-data2.txt",
+		"/Users/admin/Programs/Projects/Python/cibus/synth-loan-data3.txt",
+		"/Users/admin/Programs/Projects/Python/cibus/synth-loan-data4.txt",
+		"/Users/admin/Programs/Projects/Python/cibus/loan_sample_data-1-20.txt",
+		"/Volumes/Users/Admin/Downloads/error.txt",
+		"/Users/admin/Programs/scratchpad/error.txt",
+		"/Users/admin/Programs/scratchpad/oms2.py",
+		"/Users/admin/Programs/Projects/Python/OMS/order_mgmt.html",
+		"/Users/admin/Programs/scratchpad/oms.py",
+		"/Users/admin/Documents/Zettle/Zettle/1. Rough/_Deep dives.md",
+		"/Users/admin/Programs/Projects/Personal/wereboss.github.io/Gemfile",
+		"/Users/admin/Programs/Projects/Personal/wereboss.github.io/_config.yml",
+		"/Users/admin/Programs/Projects/Personal/wereboss.github.io/.gitignore",
+		"/Users/admin/Programs/Projects/Personal/wereboss.github.io/index.html",
+		"/Users/admin/Programs/Projects/Personal/me/about.md",
+		"/Users/admin/Programs/Projects/Personal/wereboss.github.io/about.md",
+		"/Users/admin/Programs/Projects/Personal/wereboss.github.io/_pages/home.md",
+		"/Users/admin/Programs/Projects/Personal/wereboss.github.io/_layouts/home.html",
+		"/Users/admin/Programs/Projects/Personal/me/_config.yml",
+		"/Users/admin/Programs/Projects/Personal/me/_site/about/index.html",
+		"/Users/admin/Programs/Projects/Personal/me/Gemfile",
+		"/Users/admin/Programs/Projects/Personal/wereboss.github.io/Gemfile.lock",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/tasklist.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/scripts/orders.gs",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/scripts/data.gs",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/Code.gs",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/orderlist.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/c_navbar.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/takeOrder.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/scripts/customers.gs",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/scripts/bills.gs",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/components/pickmenu.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/scripts/menu.gs",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/neworder.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/components/pickextcust.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/components/pickcustomer.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/components/editcust.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/styles/styles.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/components/picknewcust.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/d_ordersList.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/d_orders.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/components/infloader.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/d_carousel.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/dashboard.html",
+		"/Users/admin/Library/Application Support/Sublime Text/Packages/User/GoogleAppScript.sublime-build",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/ol_ordertable.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/json_orders.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/d_orderlist.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/scripts/scripts.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/no_newcustmodal.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/scripts/auth.gs",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/c_footer.html",
+		"/Users/admin/Library/Application Support/Sublime Text/Packages/Git/Git.sublime-settings",
+		"/Users/admin/Library/Application Support/Sublime Text/Packages/User/Git.sublime-settings",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/NoUser.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/appsscript.json",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/index.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/pages/_navbar.html",
+		"/Users/admin/Programs/Projects/GoogleAppScript/omar/index.html"
+	],
+	"find":
+	{
+		"height": 26.0
+	},
+	"find_in_files":
+	{
+		"height": 98.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 26.0
+	},
+	"input":
+	{
+		"height": 38.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.Terminus":
+	{
+		"height": 108.0
+	},
+	"output.exec":
+	{
+		"height": 61.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"output.git":
+	{
+		"height": 108.0
+	},
+	"pinned_build_system": "Packages/User/GoogleAppScript.sublime-build",
+	"project": "spectra.sublime-project",
+	"replace":
+	{
+		"height": 48.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 208.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
