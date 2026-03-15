@@ -1,19 +1,17 @@
 import json
 
 def get_gallery_html(images_data):
-    # 1. Prepare the dynamic parts
     folders = sorted(list({img['folder'] for img in images_data if img['folder'] and img['folder'] != '.'}))
     folder_links_html = "".join([f'<div class="folder-link" onclick="filterByFolder(\'{f}\')">📁 {f}</div>' for f in folders])
     images_json = json.dumps(images_data)
 
-    # 2. The Clean HTML Template
     html_template = """
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>Spectra</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <style>
             body { font-family: -apple-system, system-ui, sans-serif; background: #000; color: #eee; margin: 0; }
             header { background: #1a1a1a; padding: 10px 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -35,28 +33,42 @@ def get_gallery_html(images_data):
             .img-card.selected { border-color: #007aff; transform: scale(0.95); }
             .img-card.selected::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #007aff; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
 
-            #lightbox { display: none; position: fixed; z-index: 1000; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; align-items: center; justify-content: center; }
-            #lightbox img { width: 100%; height: 100%; object-fit: contain; }
-            .close { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; z-index: 1010; }
-            #fav-btn { position: absolute; bottom: 40px; right: 40px; font-size: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1010; }
-            #sentinel { height: 100px; width: 100%; }
+            /* Lightbox & Zoom Styles */
+            #lightbox { 
+                display: none; position: fixed; z-index: 1000; top: 0; left: 0; 
+                width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); 
+                align-items: center; justify-content: center; overflow: hidden;
+                touch-action: none; /* Prevents browser pull-to-refresh while zooming */
+            }
+            #lightbox img { 
+                /* Ensure it starts from a consistent base */
+                width: 100vw;
+                height: 100vh;
+                object-fit: contain; 
+                
+                transition: transform 0.1s ease-out; /* For zoom/pan */
+                cursor: grab;
+                transform-origin: center;
+                display: block;
+            }
+            #lightbox img:active { cursor: grabbing; }
+
+            .close { position: absolute; top: 20px; right: 20px; font-size: 35px; color: #fff; cursor: pointer; z-index: 1010; text-shadow: 0 0 10px #000; }
+            #fav-btn { position: absolute; bottom: 40px; right: 40px; font-size: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1010; border: 1px solid rgba(255,255,255,0.3); }
             
             #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; color: white; flex-direction: column; align-items: center; justify-content: center; }
+            #sentinel { height: 100px; width: 100%; }
         </style>
     </head>
     <body>
-        <div id="loading-overlay">
-            <h2>Processing Move...</h2>
-            <p>The gallery will refresh shortly.</p>
-        </div>
-
+        <div id="loading-overlay"><h2>Processing...</h2></div>
         <header>
             <h1 onclick="resetFilter()">💎 Spectra</h1>
             <div id="current-folder-label">[All Photos]</div>
             <div class="nav-controls">
-                <button id="batch-fav-btn" onclick="submitBatchFavorite()">❤️ Move Selected</button>
+                <button id="batch-fav-btn" onclick="submitBatchFavorite()">❤️ Move</button>
                 <button id="select-mode-btn" onclick="toggleSelectMode()">Select</button>
-                <button onclick="toggleFolders()">📂 Folders</button>
+                <button onclick="toggleFolders()">📂</button>
             </div>
         </header>
         
@@ -71,7 +83,7 @@ def get_gallery_html(images_data):
         <div id="lightbox">
             <span class="close" onclick="closeLightbox()">&times;</span>
             <div id="fav-btn" onclick="favoriteCurrent()">❤️</div>
-            <img id="lightbox-img" src="" onclick="closeLightbox()">
+            <img id="lightbox-img" src="" draggable="false">
         </div>
 
         <script>
@@ -79,54 +91,94 @@ def get_gallery_html(images_data):
             let filteredImages = [...allImages];
             let selectedPaths = new Set();
             let isSelectMode = false;
-            let currentFolderName = "."; // Track the current folder state
-            
+            let currentFolderName = ".";
             let loadedCount = 0;
             let currentIndex = 0;
-            
+
+            // Zoom & Pan State
+            let scale = 1;
+            let pointX = 0;
+            let pointY = 0;
+            let start = { x: 0, y: 0 };
+            let isPanning = false;
+
             const container = document.getElementById('gallery-container');
             const folderLabel = document.getElementById('current-folder-label');
-            const selectBtn = document.getElementById('select-mode-btn');
-            const batchFavBtn = document.getElementById('batch-fav-btn');
-            const loader = document.getElementById('loading-overlay');
+            const lightbox = document.getElementById('lightbox');
+            const lbImg = document.getElementById('lightbox-img');
 
-            function updateLabel(name, count) {
-                folderLabel.innerText = name + " [" + count + "]";
+            function setTransform() {
+                lbImg.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
             }
 
-            function toggleSelectMode() {
-                isSelectMode = !isSelectMode;
-                selectBtn.classList.toggle('active', isSelectMode);
-                if (!isSelectMode) {
-                    selectedPaths.clear();
-                    renderSelection();
-                }
-                updateBatchButton();
-            }
-
-            function updateBatchButton() {
-                batchFavBtn.style.display = (isSelectMode && selectedPaths.size > 0) ? 'block' : 'none';
-            }
-
-            function handleCardClick(index, element) {
-                const img = filteredImages[index];
-                if (isSelectMode) {
-                    if (selectedPaths.has(img.src)) {
-                        selectedPaths.delete(img.src);
-                        element.classList.remove('selected');
-                    } else {
-                        selectedPaths.add(img.src);
-                        element.classList.add('selected');
-                    }
-                    updateBatchButton();
+            // Mouse Wheel Zoom
+            lightbox.onwheel = function (e) {
+                e.preventDefault();
+                const delta = e.deltaY;
+                const zoomSpeed = 0.1;
+                if (delta > 0) {
+                    scale = Math.max(1, scale - zoomSpeed);
                 } else {
-                    openLightbox(index);
+                    scale = Math.min(5, scale + zoomSpeed);
                 }
+                if (scale === 1) { pointX = 0; pointY = 0; }
+                setTransform();
             }
 
-            function renderSelection() {
-                const cards = document.querySelectorAll('.img-card');
-                cards.forEach((card) => card.classList.remove('selected'));
+            // Panning Logic
+            lbImg.onmousedown = function (e) {
+                if (scale === 1) return;
+                e.preventDefault();
+                start = { x: e.clientX - pointX, y: e.clientY - pointY };
+                isPanning = true;
+            }
+
+            window.onmousemove = function (e) {
+                if (!isPanning) return;
+                e.preventDefault();
+                pointX = e.clientX - start.x;
+                pointY = e.clientY - start.y;
+                setTransform();
+            }
+
+            window.onmouseup = function () { isPanning = false; }
+
+            function openLightbox(index) {
+                currentIndex = index;
+                
+                // Reset zoom/pan state immediately
+                scale = 1; 
+                pointX = 0; 
+                pointY = 0;
+                setTransform();
+                
+                // Set source and display
+                lbImg.src = filteredImages[currentIndex].src;
+                lightbox.style.display = 'flex';
+                
+                // Lock scroll
+                document.body.style.overflow = 'hidden'; 
+            }
+
+            function closeLightbox() {
+                lightbox.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            // Existing logic remains below...
+            function updateLabel(name, count) { folderLabel.innerText = name + " [" + count + "]"; }
+            function toggleFolders() { const d = document.getElementById('folder-drawer'); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
+            function toggleSelectMode() { isSelectMode = !isSelectMode; document.getElementById('select-mode-btn').classList.toggle('active', isSelectMode); if(!isSelectMode){ selectedPaths.clear(); renderSelection(); } updateBatchButton(); }
+            function updateBatchButton() { document.getElementById('batch-fav-btn').style.display = (isSelectMode && selectedPaths.size > 0) ? 'block' : 'none'; }
+            function renderSelection() { document.querySelectorAll('.img-card').forEach(c => c.classList.remove('selected')); }
+            
+            function handleCardClick(index, element) {
+                if (isSelectMode) {
+                    const src = filteredImages[index].src;
+                    if (selectedPaths.has(src)) { selectedPaths.delete(src); element.classList.remove('selected'); }
+                    else { selectedPaths.add(src); element.classList.add('selected'); }
+                    updateBatchButton();
+                } else { openLightbox(index); }
             }
 
             async function submitBatchFavorite() {
@@ -134,7 +186,7 @@ def get_gallery_html(images_data):
                 if (count === 0) return;
 
                 if (confirm(`Move ${count} files to Favorites?`)) {
-                    loader.style.display = 'flex';
+                    document.getElementById('loading-overlay').style.display = 'flex';
                     try {
                         const res = await fetch('/favorite_batch', {
                             method: 'POST',
@@ -143,85 +195,46 @@ def get_gallery_html(images_data):
                         });
                         
                         if (res.ok) {
-                            alert("Success! " + count + " files moved.");
-                            // NEW: Append the folder name to the URL hash before reload
-                            const hash = currentFolderName === "." ? "" : "#" + encodeURIComponent(currentFolderName);
-                            window.location.href = window.location.pathname + window.location.search + hash;
-                            window.location.reload();
+                            // First, update the hash so the browser knows where to go
+                            if (currentFolderName !== ".") {
+                                location.hash = encodeURIComponent(currentFolderName);
+                            } else {
+                                location.hash = "";
+                            }
+                            // Then reload the page
+                            location.reload();
                         } else {
-                            loader.style.display = 'none';
+                            document.getElementById('loading-overlay').style.display = 'none';
                             alert("Server error: Could not move files.");
                         }
                     } catch (err) {
-                        loader.style.display = 'none';
+                        document.getElementById('loading-overlay').style.display = 'none';
                         console.error("Fetch error:", err);
                     }
                 }
             }
 
-            function toggleFolders() {
-                const drawer = document.getElementById('folder-drawer');
-                drawer.style.display = drawer.style.display === 'block' ? 'none' : 'block';
-            }
-
-            function filterByFolder(folderPath) {
-                currentFolderName = folderPath;
-                filteredImages = allImages.filter(img => img.folder === folderPath);
-                updateLabel(folderPath, filteredImages.length);
-                applyFilterUpdate();
-                toggleFolders();
-            }
-
-            function resetFilter() {
-                currentFolderName = ".";
-                filteredImages = [...allImages];
-                updateLabel("[All Photos]", filteredImages.length);
-                applyFilterUpdate();
-                if(document.getElementById('folder-drawer').style.display === 'block') toggleFolders();
-            }
-
-            function applyFilterUpdate() {
-                container.innerHTML = '';
-                loadedCount = 0;
-                selectedPaths.clear();
-                updateBatchButton();
-                loadMore();
-                window.scrollTo(0, 0);
-            }
+            function filterByFolder(f) { currentFolderName = f; filteredImages = allImages.filter(img => img.folder === f); updateLabel(f, filteredImages.length); applyFilterUpdate(); toggleFolders(); }
+            function resetFilter() { currentFolderName = "."; filteredImages = [...allImages]; updateLabel("[All Photos]", filteredImages.length); applyFilterUpdate(); if(document.getElementById('folder-drawer').style.display === 'block') toggleFolders(); }
+            function applyFilterUpdate() { container.innerHTML = ''; loadedCount = 0; selectedPaths.clear(); updateBatchButton(); loadMore(); window.scrollTo(0, 0); }
 
             function loadMore() {
-                const currentBatchSize = (loadedCount === 0) ? 10 : 50;
-                const nextBatch = filteredImages.slice(loadedCount, loadedCount + currentBatchSize);
-                nextBatch.forEach((imgData, index) => {
-                    const globalIndex = loadedCount + index;
+                const size = (loadedCount === 0) ? 10 : 50;
+                const next = filteredImages.slice(loadedCount, loadedCount + size);
+                next.forEach((img, i) => {
                     const div = document.createElement('div');
                     div.className = 'img-card';
-                    div.onclick = function() { handleCardClick(globalIndex, this); };
-                    div.innerHTML = `<img src="${imgData.src}" loading="lazy">`;
+                    const globalIdx = loadedCount + i;
+                    div.onclick = function() { handleCardClick(globalIdx, this); };
+                    div.innerHTML = `<img src="${img.src}" loading="lazy">`;
                     container.appendChild(div);
                 });
-                loadedCount += nextBatch.length;
+                loadedCount += next.length;
             }
 
-            const observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && loadedCount < filteredImages.length) loadMore();
-            }, { rootMargin: '400px' });
+            const observer = new IntersectionObserver((e) => { if (e[0].isIntersecting && loadedCount < filteredImages.length) loadMore(); }, { rootMargin: '400px' });
             observer.observe(document.getElementById('sentinel'));
 
-            function openLightbox(index) {
-                currentIndex = index;
-                document.getElementById('lightbox').style.display = 'flex';
-                document.body.style.overflow = 'hidden'; 
-                updateLightbox();
-            }
-            function closeLightbox() {
-                document.getElementById('lightbox').style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-            function updateLightbox() {
-                document.getElementById('lightbox-img').src = filteredImages[currentIndex].src;
-            }
-            
             async function favoriteCurrent() {
                 const imgPath = filteredImages[currentIndex].src;
                 const response = await fetch('/favorite', {
@@ -230,36 +243,30 @@ def get_gallery_html(images_data):
                     body: JSON.stringify({ path: imgPath })
                 });
                 if (response.ok) {
-                    const hash = currentFolderName === "." ? "" : "#" + encodeURIComponent(currentFolderName);
-                    window.location.href = window.location.pathname + window.location.search + hash;
-                    window.location.reload();
+                    if (currentFolderName !== ".") {
+                        location.hash = encodeURIComponent(currentFolderName);
+                    } else {
+                        location.hash = "";
+                    }
+                    location.reload();
                 }
             }
 
             document.addEventListener('keydown', (e) => {
-                if (document.getElementById('lightbox').style.display === 'flex') {
-                    if (e.key === "ArrowRight") { currentIndex = (currentIndex + 1) % filteredImages.length; updateLightbox(); }
-                    else if (e.key === "ArrowLeft") { currentIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length; updateLightbox(); }
+                if (lightbox.style.display === 'flex') {
+                    if (e.key === "ArrowRight") { currentIndex = (currentIndex + 1) % filteredImages.length; openLightbox(currentIndex); }
+                    else if (e.key === "ArrowLeft") { currentIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length; openLightbox(currentIndex); }
                     else if (e.key === "Escape") closeLightbox();
                     else if (e.key.toLowerCase() === "f") favoriteCurrent();
                 }
             });
 
-            // NEW: Initialization logic to check URL Hash
             window.addEventListener('DOMContentLoaded', () => {
                 const hash = window.location.hash.substring(1);
                 if (hash) {
-                    const folderName = decodeURIComponent(hash);
-                    // Check if folder exists in data
-                    const folderExists = allImages.some(img => img.folder === folderName);
-                    if (folderExists) {
-                        filterByFolder(folderName);
-                        // Close drawer if open (though it shouldn't be yet)
-                        document.getElementById('folder-drawer').style.display = 'none';
-                        return;
-                    }
+                    const f = decodeURIComponent(hash);
+                    if (allImages.some(i => i.folder === f)) { filterByFolder(f); document.getElementById('folder-drawer').style.display = 'none'; return; }
                 }
-                // Fallback to default load
                 resetFilter();
             });
         </script>
@@ -267,8 +274,6 @@ def get_gallery_html(images_data):
     </html>
     """
 
-    # 3. Final Injection
     html_template = html_template.replace("{{FOLDER_LINKS}}", folder_links_html)
     html_template = html_template.replace("{{IMAGES_JSON}}", images_json)
-    
     return html_template
